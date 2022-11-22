@@ -29,9 +29,9 @@ def dump_verilog(cir:circuit.circuit, filename:str, modulename="verilog_dump"):
         else:
             assert 0
     
-    print(f"module {modulename} (" + (", ".join(inps)) + ", " + (", ".join(outs)) + ");" )
-    print(indent + "input " + beautify(inps) + ";\n")
-    print(indent + "output " + beautify(outs) + ";\n")
+    print(f"module {modulename} (" + (beautify(inps, indent="    ")) + ", \n" + (beautify(outs, indent="    ")) + ");" )
+    print(indent + "input " + beautify(inps) + ";")
+    print(indent + "output " + beautify(outs) + ";")
     print(indent + "wire " + beautify(nets))
     print("endmodule")
     #fout.close()
