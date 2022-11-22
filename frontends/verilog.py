@@ -6,7 +6,7 @@ def dump_verilog(cir:circuit.circuit, filename:str, modulename="verilog_dump"):
         cline = lst[0]
         i = 1
         while i < len(lst):
-            while (len(cline) + 2 + len(lst[i]) <= linewidth) and (i < len(lst)):
+            while (i < len(lst) and (len(cline) + 2 + len(lst[i]) <= linewidth)):
                 cline += ", " + lst[i]
                 i += 1
             lines.append(cline)
