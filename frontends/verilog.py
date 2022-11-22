@@ -1,11 +1,15 @@
 from .. import circuit, utils
 
 def dump_verilog(cir:circuit.circuit, filename:str, modulename="verilog_dump"):
-    def beautify(lst:list, perline:int=5, indent:str="    "*2) -> str:
+    def beautify(lst:list, linewidth:int=40, indent:str="    "*2) -> str:
         lines = []
-        for i in range(0, len(lst), perline):
-            last = min(i + perline, len(lst))
-            lines.append(", ".join(lst[i:last]))
+        cline = lst[0]
+        i = 1
+        while i < len(lst):
+            while (len(cline) + 2 + lst[i] <= linewidth) and (i < len(lst)):
+                cline += ", " + lst[i]
+                i += 1
+            lines.append(cline)
         return (", \n" + indent).join(lines)
     
     indent = "    "
