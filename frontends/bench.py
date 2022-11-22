@@ -45,6 +45,7 @@ def load_bench(bench:str) -> circuit.circuit():
 
     with open(bench, "r") as benchin:
         for line in benchin:
+            print (line)
             # Discard comments
             line = line[:line.find("#")].strip()
             isio = process_ios(line, out)
