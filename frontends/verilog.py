@@ -33,9 +33,10 @@ def dump_verilog(cir:circuit.circuit, filename:str, modulename="verilog_dump"):
     print(indent + "input " + beautify(inps) + ";")
     print(indent + "output " + beautify(outs) + ";")
     print(indent + "wire " + beautify(nets))
+    modules = {}
     for module in cir.module_list:
         node = cir.module_list[module]
-        print(module)
-        print(cir.graph.adj[node])
+        modules[module] = [node.name, node.mtype]
+        print(modules[module])
     print("endmodule")
     #fout.close()
