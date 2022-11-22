@@ -3,9 +3,10 @@ from .. import circuit, utils
 def dump_verilog(cir:circuit.circuit, filename:str, modulename="verilog_dump"):
     def beautify(lst:list, linewidth:int=40, indent:str="    "*2) -> str:
         lines = []
-        cline = lst[0]
-        i = 1
+        i = 0
         while i < len(lst):
+            cline = lst[i]
+            i += 1
             while (i < len(lst) and (len(cline) + 2 + len(lst[i]) <= linewidth)):
                 cline += ", " + lst[i]
                 i += 1
