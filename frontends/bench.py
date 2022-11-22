@@ -53,15 +53,14 @@ def load_bench(bench:str) -> circuit.circuit():
         for line in benchin:
             # Discard comments
             line = line[:line.find("#")].strip()
-            print (line)
             isio = process_ios(line, out)
             isgate = process_gate(line, out, moduleindex)
             if isgate:
                 moduleindex += 1
             if isio:
                 print ("IO: " + line)
-            if isgate:
-                print ("Gate: " + line)
+            #if isgate:
+            #    print ("Gate: " + line)
             assert not(isio and isgate)
     
     return out
