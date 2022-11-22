@@ -57,8 +57,8 @@ def load_bench(bench:str) -> circuit.circuit():
             isgate = process_gate(line, out, moduleindex)
             if isgate:
                 moduleindex += 1
-            if isio:
-                print ("IO: " + line)
+            #if isio:
+            #    print ("IO: " + line)
             #if isgate:
             #    print ("Gate: " + line)
             assert not(isio and isgate)
