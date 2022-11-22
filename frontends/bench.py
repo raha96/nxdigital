@@ -44,6 +44,7 @@ def load_bench(bench:str) -> circuit.circuit():
         return False
 
     with open(bench, "r") as benchin:
+        print(bench)
         for line in benchin:
             print (line)
             # Discard comments
@@ -57,4 +58,5 @@ def load_bench(bench:str) -> circuit.circuit():
             if isgate:
                 print ("Gate: " + line)
             assert not(isio and isgate)
+    
     return out
