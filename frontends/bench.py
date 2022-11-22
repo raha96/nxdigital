@@ -14,11 +14,9 @@ def load_bench(bench:str) -> circuit.circuit():
             if ismatch[1] != "":
                 # output
                 out.add_net(ismatch[3], utils._net_type.OUT)
-                print(f"{ismatch[3]} is output")
             elif ismatch[2] != "":
                 # input
                 out.add_net(ismatch[3], utils._net_type.IN)
-                print(f"{ismatch[3]} is input")
             else:
                 assert 0
             return True
