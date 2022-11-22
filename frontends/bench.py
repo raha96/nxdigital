@@ -5,7 +5,7 @@ def load_bench(bench:str) -> circuit.circuit():
     out = circuit.circuit()
     
     def process_ios(line:str) -> bool:
-        ismatch = re.findall(r"\b(([Ii][Nn][Pp][Uu][Tt])|([Oo][Uu][Tt][Pp][Uu][Tt]))\w*=\w*\(", line)
+        ismatch = re.findall(r"\b(([Ii][Nn][Pp][Uu][Tt])|([Oo][Uu][Tt][Pp][Uu][Tt]))\w*\(", line)
         print(ismatch)
 
     with open(bench, "r") as benchin:
