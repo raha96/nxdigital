@@ -1,7 +1,7 @@
 from .. import circuit, utils
 
 def dump_verilog(cir:circuit.circuit, filename:str, modulename="verilog_dump"):
-    def beautify(lst:list, linewidth:int=40, indent:str="    "*2) -> str:
+    def beautify(lst:list, linewidth:int=80, indent:str="    "*2) -> str:
         lines = []
         i = 0
         while i < len(lst):
