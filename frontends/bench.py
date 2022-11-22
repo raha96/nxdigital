@@ -5,7 +5,7 @@ def load_bench(bench:str) -> circuit.circuit():
     out = circuit.circuit()
     moduleindex = 0
     
-    def process_ios(line:str) -> bool:
+    def process_ios(line:str, out:circuit.circuit()) -> bool:
         ismatch = re.findall(r"(([Oo][Uu][Tt][Pp][Uu][Tt])|([Ii][Nn][Pp][Uu][Tt]))\s*\(\s*([^\)]+)\s*\)", line)
         if len(ismatch) == 4:
             # I/O detected
@@ -20,7 +20,7 @@ def load_bench(bench:str) -> circuit.circuit():
             return True
         return False
     
-    def process_gate(line:str) -> bool:
+    def process_gate(line:str, out:circuit.circuit(), moduleindex:int) -> int:
         ismatch = re.findall(r"", line)
         if len(ismatch) == 3:
             # Gate detected
@@ -34,7 +34,6 @@ def load_bench(bench:str) -> circuit.circuit():
                 if not _net in out.net_list:
                     out.add_net(_net, utils._net_type.INT)
             modname = "U" + str(moduleindex)
-            moduleindex += 1
             out.add_module(modname, _type)
             out.add_connection(modname, _outname, "out")
             i = 0
@@ -42,12 +41,15 @@ def load_bench(bench:str) -> circuit.circuit():
                 out.add_connection(_inp.strip(), modname, f"in{i}")
                 i += 1
             return True
+        return False
 
     with open(bench, "r") as benchin:
         for line in benchin:
             # Discard comments
             line = line[:line.find("#")].strip()
-            isio = process_ios(line)
-            isgate = process_gate(line)
+            isio = process_ios(line, out)
+            isgate = process_gate(line, out, moduleindex)
+            if isgate:
+                moduleindex += 1
             assert not(isio and isgate)
     return out
