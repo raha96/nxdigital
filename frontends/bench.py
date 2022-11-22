@@ -61,6 +61,7 @@ def load_bench(bench:str) -> circuit.circuit():
             #    print ("IO: " + line)
             #if isgate:
             #    print ("Gate: " + line)
+            # A single line can not be I/O AND gate simultanously
             assert not(isio and isgate)
     
     return out
