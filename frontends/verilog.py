@@ -10,6 +10,7 @@ def dump_verilog(cir:circuit.circuit, filename:str, modulename="verilog_dump"):
                 cline += ", " + lst[i]
                 i += 1
             lines.append(cline)
+            cline = ""
         return (", \n" + indent).join(lines)
     
     indent = "    "
