@@ -42,7 +42,7 @@ def dump_verilog(cir:circuit.circuit, filename:str, modulename="verilog_dump"):
     for net in cir.net_list:
         node = cir.net_list[net]
         for adjnet in cir.graph.adj[node]:
-            modules[adjnet].append(net)
+            modules[adjnet].append(net.name)
     for module in cir.module_list:
         print(modules[module])
     print("endmodule")
