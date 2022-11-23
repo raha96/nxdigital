@@ -22,7 +22,7 @@ def load_bench(bench:str) -> circuit.circuit():
             return True
         return False
     
-    def process_gate(line:str, out:circuit.circuit(), moduleindex:int, preservecase:bool = False) -> int:
+    def process_gate(line:str, out:circuit.circuit(), moduleindex:int) -> int:
         ismatch = re.findall(r"(\w+)\s*=\s*(\w+)\s*\(([^)]+)\)", line)
         if len(ismatch):
             ismatch = ismatch[0]
@@ -30,8 +30,6 @@ def load_bench(bench:str) -> circuit.circuit():
             # Gate detected
             _outname = ismatch[0]
             _type = ismatch[1]
-            if not preservecase:
-                _type = _type.lower()
             _params = ismatch[2].split(",")
             _nets = [_outname]
             for _net in _params:
