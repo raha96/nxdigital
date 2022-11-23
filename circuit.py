@@ -1,11 +1,14 @@
 import networkx, pydot
-from nxdigital.utils import _net_type, _node_net, _node_module
+from .utils import _net_type, _node_net, _node_module
 
 class circuit(list):
   def __init__(self):
     self.graph = networkx.DiGraph()
     self.net_list = {}
     self.module_list = {}
+  
+  def __str__(self):
+    return "circuit"
   
   def add_net(self, name:str, ntype:_net_type):
     self.net_list[name] = _node_net(name, ntype)
