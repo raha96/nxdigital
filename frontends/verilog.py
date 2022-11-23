@@ -57,10 +57,9 @@ def dump_verilog(cir:circuit.circuit, filename:str, modulename="verilog_dump"):
     for net in cir.net_list:
         node = cir.net_list[net]
         for adjnet in cir.graph.adj[node]:
-            modules[adjnet.name].append(net)
             port = getport(net, adjnet.name, cir, True)
-            print(f"{net} -> {adjnet}: {port}")
-    #for module in cir.module_list:
-    #    print(modules[module])
+            modules[adjnet.name][2][net] = port
+    for module in cir.module_list:
+        print(modules[module])
     print("endmodule")
     #fout.close()
