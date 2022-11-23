@@ -1,4 +1,5 @@
 from .. import circuit, utils
+import networkx as nx
 
 def dump_verilog(cir:circuit.circuit, filename:str, modulename="verilog_dump"):
     def beautify(lst:list, linewidth:int=80, indent:str="    "*2) -> str:
@@ -13,6 +14,16 @@ def dump_verilog(cir:circuit.circuit, filename:str, modulename="verilog_dump"):
             lines.append(cline)
             cline = ""
         return (", \n" + indent).join(lines)
+    
+    def getport(src:str, dst:str, cir:circuit.circuit, dir:bool) -> str:
+        # dir: False -> module to net, True -> net to module
+        if dir:
+            n1 = cir.net_list[src]
+            n2 = cir.module_list[dst]
+        else:
+            n1 = cir.module_list[src]
+            n2 = cir.net_list[dst]
+        return cir.graph.adj[n1][n2]["port"]
     
     indent = "    "
 
@@ -37,13 +48,17 @@ def dump_verilog(cir:circuit.circuit, filename:str, modulename="verilog_dump"):
     # Outputs
     for module in cir.module_list:
         node = cir.module_list[module]
-        modules[module] = [node.mtype, node.name]
+        net = node.name
+        modules[module] = [node.mtype, net]
+        port = getport(module, net, cir, False)
+        print(f"{module} -> {net}: {port}")
     # Inputs
     for net in cir.net_list:
         node = cir.net_list[net]
         for adjnet in cir.graph.adj[node]:
             modules[adjnet.name].append(net)
-    for module in cir.module_list:
-        print(modules[module])
+            #print(f"{} -> {}")
+    #for module in cir.module_list:
+    #    print(modules[module])
     print("endmodule")
     #fout.close()
