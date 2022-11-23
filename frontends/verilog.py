@@ -16,6 +16,7 @@ def dump_verilog(cir:circuit.circuit, filename:str, modulename="verilog_dump"):
         return (", \n" + indent).join(lines)
     
     def getport(src:str, dst:str, cir:circuit.circuit, dir:bool) -> str:
+        # TODO: I'm positive there's a better way to do this via nx functions
         # dir: False -> module to net, True -> net to module
         if dir:
             n1 = cir.net_list[src]
@@ -50,6 +51,7 @@ def dump_verilog(cir:circuit.circuit, filename:str, modulename="verilog_dump"):
         node = cir.module_list[module]
         net = node.name
         modules[module] = [node.mtype, net]
+        print(f"{module} -> {net}")
         port = getport(module, net, cir, False)
         print(f"{module} -> {net}: {port}")
     # Inputs
