@@ -32,11 +32,18 @@ def dump_verilog(cir:circuit.circuit, filename:str, modulename="verilog_dump"):
     print(f"module {modulename} (" + (beautify(inps, indent="    ")) + ", \n" + (beautify(outs, indent="    ")) + ");" )
     print(indent + "input " + beautify(inps) + ";")
     print(indent + "output " + beautify(outs) + ";")
-    print(indent + "wire " + beautify(nets))
+    print(indent + "wire " + beautify(nets) + ";")
     modules = {}
+    # Outputs
     for module in cir.module_list:
         node = cir.module_list[module]
-        modules[module] = [node.name, node.mtype]
+        modules[module] = [node.mtype, node.name]
+    # Inputs
+    for net in cir.net_list:
+        node = cir.net_list[net]
+        for adjnet in cir.graph.adj[node]:
+            modules[adjnet].append(net)
+    for module in cir.module_list:
         print(modules[module])
     print("endmodule")
     #fout.close()
