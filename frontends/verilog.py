@@ -1,7 +1,7 @@
 from .. import circuit, utils
 import networkx as nx
 
-def dump_verilog(cir:circuit.circuit, filename:str, modulename="verilog_dump"):
+def dump_verilog_str(cir:circuit.circuit, modulename="verilog_dump"):
     def beautify(lst:list, linewidth:int=80, indent:str="    "*2) -> str:
         lines = []
         i = 0
@@ -40,12 +40,12 @@ def dump_verilog(cir:circuit.circuit, filename:str, modulename="verilog_dump"):
         else:
             assert 0
     
-    fout = open(filename, "w")
+    outstr = ""
 
-    fout.write(f"module {modulename} (" + (beautify(inps, indent="    ")) + ", \n" + (beautify(outs, indent="    ")) + ");\n")
-    fout.write(indent + "input " + beautify(inps) + ";\n")
-    fout.write(indent + "output " + beautify(outs) + ";\n")
-    fout.write(indent + "wire " + beautify(nets) + ";\n")
+    outstr += f"module {modulename} (" + (beautify(inps, indent="    ")) + ", \n" + (beautify(outs, indent="    ")) + ");\n"
+    outstr += indent + "input " + beautify(inps) + ";\n"
+    outstr += indent + "output " + beautify(outs) + ";\n"
+    outstr += indent + "wire " + beautify(nets) + ";\n"
     modules = {}
     # Outputs
     for module in cir.module_list:
@@ -67,6 +67,11 @@ def dump_verilog(cir:circuit.circuit, filename:str, modulename="verilog_dump"):
             ports.append(f".{module[2][port]}({port})")
         portmap = ", ".join(ports)
         line = indent + module[0] + " " + module[1] + "(" + portmap + ");\n"
-        fout.write(line)
-    fout.write("endmodule\n")
+        outstr += line
+    outstr += "endmodule\n"
+    return outstr
+
+def dump_verilog(cir:circuit.circuit, filename:str, modulename="verilog_dump"):
+    fout = open(filename, "w")
+    fout.write(dump_verilog_str(cir, modulename))
     fout.close()
