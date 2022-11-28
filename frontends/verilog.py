@@ -24,6 +24,7 @@ def dump_verilog_str(cir:circuit.circuit, modulename="verilog_dump"):
         else:
             n1 = cir.module_list[src]
             n2 = cir.net_list[dst]
+        print(f"{src} -> {dst}")
         return cir.graph.adj[n1][n2]["port"]
     
     indent = "    "
