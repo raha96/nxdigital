@@ -1,7 +1,7 @@
 from .. import circuit, utils
 import networkx as nx
 
-def dump_verilog_str(cir:circuit.circuit, modulename="verilog_dump"):
+def dump_verilog_str(cir:circuit.circuit, modulename:str="verilog_dump", portmapbyname:bool=True):
     def beautify(lst:list, linewidth:int=80, indent:str="    "*2) -> str:
         lines = []
         i = 0
@@ -53,15 +53,8 @@ def dump_verilog_str(cir:circuit.circuit, modulename="verilog_dump"):
         node = cir.module_list[module]
         modules[module] = [node.mtype, module, {}]
         net = list(cir.graph.adj[node].keys())[0]
-        #print(module)
-        #for netname in cir.graph.adj[cir.module_list[module]]:
-        #    print(netname.name)
-        #    print(type(netname))
-        #print(type(cir.module_list[module]))
-        #port = getport(module, net, cir, False)
         src = cir.module_list[module]
         port = cir.graph.adj[src][net]["port"]
-        print(f"Port: {port}")
         modules[module][2][net] = port
     # Inputs
     for net in cir.net_list:
@@ -73,7 +66,10 @@ def dump_verilog_str(cir:circuit.circuit, modulename="verilog_dump"):
         module = modules[modulename]
         ports = []
         for port in module[2]:
-            ports.append(f".{module[2][port]}({port})")
+            if portmapbyname:
+                ports.append(f".{module[2][port]}({port})")
+            else:
+                ports.append(port)
         portmap = ", ".join(ports)
         line = indent + module[0] + " " + module[1] + "(" + portmap + ");\n"
         outstr += line
