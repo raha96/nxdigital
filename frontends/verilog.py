@@ -69,7 +69,7 @@ def dump_verilog_str(cir:circuit.circuit, modulename:str="verilog_dump", portmap
             if portmapbyname:
                 ports.append(f".{module[2][port]}({port})")
             else:
-                ports.append(port.name)
+                ports.append(f"{port}")
         portmap = ", ".join(ports)
         line = indent + module[0] + " " + module[1] + "(" + portmap + ");\n"
         outstr += line
