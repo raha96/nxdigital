@@ -1,3 +1,4 @@
+from ctypes import util
 from .. import circuit, utils
 import re
 
@@ -67,9 +68,8 @@ def load_bench(bench:str) -> circuit.circuit():
 
 
 def dump_bench(cir:circuit.circuit) -> str:
-    def isio(ntype:str) -> bool:
-        l = ntype.lower()
-        if l == "input" or l == "output":
+    def isio(ntype:utils._net_type) -> bool:
+        if ntype == utils._net_type.IN or ntype == utils._net_type.OUT:
             return True
         return False
     
