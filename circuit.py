@@ -29,6 +29,14 @@ class circuit(list):
     else:
       assert (0)
   
+  def remove_connection(self, name1:str, name2:str):
+    if (name1 in self.net_list) and (name2 in self.module_list):
+      self.graph.remove_edge(self.net_list[name1], self.module_list[name2])
+    elif (name1 in self.module_list) and (name2 in self.net_list):
+      self.graph.remove_edge(self.module_list[name1], self.net_list[name2])
+    else:
+      assert (0)
+  
   def to_pydot(self, labeldict:dict={}) -> pydot.Dot():
     nx = networkx.DiGraph()
     nx.add_nodes_from(self.graph.nodes)
