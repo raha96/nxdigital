@@ -85,11 +85,11 @@ def dump_bench(cir:circuit.circuit) -> str:
     out += "\n"
 
     for module in cir.module_list:
-        node = cir.module_list[module]
-        outname = list(cir.graph.adj[node])[0]
+        modulenode = cir.module_list[module]
+        outname = list(cir.graph.adj[modulenode])[0]
         ins = []
-        for node in cir.graph.pred[node]:
+        for node in cir.graph.pred[modulenode]:
             ins.append(node.name)
-        out += outname.name + " = " + node.mtype + "(" + (", ".join(ins)) + ")\n"
+        out += outname.name + " = " + modulenode.mtype + "(" + (", ".join(ins)) + ")\n"
         
     return out
