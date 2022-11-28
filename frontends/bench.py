@@ -68,6 +68,10 @@ def load_bench(bench:str) -> circuit.circuit():
 
 
 def dump_bench(cir:circuit.circuit) -> str:
+    iotypename = {
+        utils._net_type.IN: "INPUT", 
+        utils._net_type.OUT: "OUTPUT"
+    }
     def isio(ntype:utils._net_type) -> bool:
         if ntype == utils._net_type.IN or ntype == utils._net_type.OUT:
             return True
@@ -77,7 +81,7 @@ def dump_bench(cir:circuit.circuit) -> str:
     for net in cir.net_list:
         ntype = cir.net_list[net].ntype
         if isio(ntype):
-            out += ntype + "(" + net + ")\n"
+            out += iotypename[ntype] + "(" + net + ")\n"
     out += "\n"
 
     for module in cir.module_list:
