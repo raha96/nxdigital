@@ -54,8 +54,8 @@ def dump_verilog_str(cir:circuit.circuit, modulename="verilog_dump"):
         modules[module] = [node.mtype, module, {}]
         net = list(cir.graph.adj[node].keys())[0].name
         print(module)
-        for net in cir.graph.adj[cir.module_list[module]]:
-            print(net.name)
+        for netname in cir.graph.adj[cir.module_list[module]]:
+            print(netname.name)
         port = getport(module, net, cir, False)
         modules[module][2][net] = port
     # Inputs
