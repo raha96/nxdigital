@@ -64,3 +64,27 @@ def load_bench(bench:str) -> circuit.circuit():
             assert not(isio and isgate)
     
     return out
+
+
+def dump_bench(cir:circuit.circuit) -> str:
+    def isio(ntype:str) -> bool:
+        l = ntype.lower()
+        if l == "input" or l == "output":
+            return True
+        return False
+    
+    out = ""
+    for net in cir.net_list:
+        ntype = cir.net_list[net].ntype
+        if isio(ntype):
+            out += ntype + "(" + net + ")\n"
+    out += "\n"
+
+    for module in cir.module_list:
+        outname = list(cir.graph.adj[module])[0]
+        ins = []
+        for node in cir.graph.pred[module]:
+            ins.append(node.name)
+        out += outname + " = " + module.mtype + "(" + (", ".join(ins)) + ")\n"
+        
+    return out
