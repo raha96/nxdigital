@@ -14,12 +14,22 @@ class circuit(list):
     self.net_list[name] = _node_net(name, ntype)
     self.graph.add_node(self.net_list[name])
   
+  def remove_net(self, name:str):
+    net = self.net_list[name]
+    self.graph.remove_node(net)
+    self.net_list.pop(name)
+  
   def change_net_type(self, name:str, ntype:_net_type):
     self.net_list[name].ntype = ntype
   
   def add_module(self, name:str, mtype:str):
     self.module_list[name] = _node_module(name, mtype)
     self.graph.add_node(self.module_list[name])
+  
+  def remove_module(self, name:str):
+    module = self.module_list[name]
+    self.graph.remove_node(module)
+    self.module_list.pop(name)
   
   def add_connection(self, name1:str, name2:str, port:str):
     if (name1 in self.net_list) and (name2 in self.module_list):
