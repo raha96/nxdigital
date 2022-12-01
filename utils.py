@@ -11,6 +11,7 @@ class _node_net():
     self.name = name
     self.ntype = ntype
     self.value = 'U'
+    self.locked = False
     # U Z X 0 1
 
   def __hash__(self):
