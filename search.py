@@ -1,8 +1,9 @@
+from typing import OrderedDict
 from . import circuit
 from queue import Queue
 from nxdigital.utils import _net_type
 
-def topoligical_nets_from_outputs (cir:circuit.circuit) -> list:
+def topological_nets_from_outputs (cir:circuit.circuit) -> list:
     """Return a list of circuit nets, sorted by reverse topological order"""
     def member(view):
         assert len(view) == 1
@@ -38,4 +39,14 @@ def topoligical_nets_from_outputs (cir:circuit.circuit) -> list:
             if ready:
                 q.put(parent)
                 marked[parent] = True
+    return order
+
+
+def topological_modules_from_outputs (cir:circuit.circuit) -> list:
+    order_nets = topological_nets_from_outputs(cir)
+    order = []
+    pred = cir.graph.pref
+    for net in order_nets:
+        for mod in pred[net]:
+            order.append(mod.name)
     return order
