@@ -28,17 +28,18 @@ def topological_nets_from_outputs (cir:circuit.circuit) -> list:
     while q.qsize():
         net = q.get()
         order.append(net.name)
-        module = member(pred[net])
-        for parent in pred[module]:
-            ready = True
-            for childmod in adj[parent]:
-                childnet = member(adj[childmod])
-                if not marked[childnet]:
-                    ready = False
-                    break
-            if ready:
-                q.put(parent)
-                marked[parent] = True
+        if net.ntype != _net_type.IN:
+            module = member(pred[net])
+            for parent in pred[module]:
+                ready = True
+                for childmod in adj[parent]:
+                    childnet = member(adj[childmod])
+                    if not marked[childnet]:
+                        ready = False
+                        break
+                if ready:
+                    q.put(parent)
+                    marked[parent] = True
     return order
 
 
