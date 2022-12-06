@@ -19,7 +19,7 @@ def topological_nets_from_outputs (cir:circuit.circuit) -> list:
     q = Queue()
     for netname in cir.net_list:
         net = cir.net_list[netname]
-        if net.ntype == _net_type.OUT:
+        if (net.ntype == _net_type.OUT) or (net.ntype == _net_type.INOUT):
             q.put(net)
             marked[net] = True
         else:
@@ -28,7 +28,7 @@ def topological_nets_from_outputs (cir:circuit.circuit) -> list:
     while q.qsize():
         net = q.get()
         order.append(net.name)
-        if net.ntype != _net_type.IN:
+        if (net.ntype != _net_type.IN) and (net.ntype != _net_type.INOUT):
             module = member(pred[net])
             for parent in pred[module]:
                 ready = True
