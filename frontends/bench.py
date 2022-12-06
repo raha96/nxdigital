@@ -14,10 +14,18 @@ def load_bench(bench:str) -> circuit.circuit():
             # I/O detected
             if ismatch[1] != "":
                 # output
-                out.add_net(ismatch[3], utils._net_type.OUT)
+                if ismatch[3] in out.net_list:
+                    assert out.net_list[ismatch[3]].ntype == utils._net_type.IN
+                    out.net_list[ismatch[3]].ntype = utils._net_type.INOUT
+                else:
+                    out.add_net(ismatch[3], utils._net_type.OUT)
             elif ismatch[2] != "":
                 # input
-                out.add_net(ismatch[3], utils._net_type.IN)
+                if ismatch[3] in out.net_list:
+                    assert out.net_list[ismatch[3]].ntype == utils._net_type.OUT
+                    out.net_list[ismatch[3]].ntype = utils._net_type.INOUT
+                else:
+                    out.add_net(ismatch[3], utils._net_type.IN)
             else:
                 assert 0
             return True
@@ -68,10 +76,10 @@ def load_bench(bench:str) -> circuit.circuit():
 
 
 def dump_bench(cir:circuit.circuit) -> str:
-    iotypename = {
-        utils._net_type.IN: "INPUT", 
-        utils._net_type.OUT: "OUTPUT"
-    }
+    #iotypename = {
+    #    utils._net_type.IN: "INPUT", 
+    #    utils._net_type.OUT: "OUTPUT"
+    #}
     def isio(ntype:utils._net_type) -> bool:
         if ntype == utils._net_type.IN or ntype == utils._net_type.OUT:
             return True
@@ -81,7 +89,13 @@ def dump_bench(cir:circuit.circuit) -> str:
     for net in cir.net_list:
         ntype = cir.net_list[net].ntype
         if isio(ntype):
-            out += iotypename[ntype] + "(" + net + ")\n"
+            if ntype == utils._net_type.IN:
+                out += "INPUT(" + net + ")\n"
+            elif ntype == utils._net_type.OUT:
+                out += "OUTPUT(" + net + ")\n"
+            elif ntype == utils._net_type.INOUT:
+                out += "INPUT(" + net + ")\n"
+                out += "OUTPUT(" + net + ")\n"
     out += "\n"
 
     for module in cir.module_list:

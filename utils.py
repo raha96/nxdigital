@@ -5,6 +5,7 @@ class _net_type (Enum):
   # Internal
   IN = 1
   OUT = 2
+  INOUT = 3
 
 class _node_net():
   def __init__(self, name:str, ntype:_net_type):
