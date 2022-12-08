@@ -22,6 +22,10 @@ class circuit(list):
   def change_net_type(self, name:str, ntype:_net_type):
     self.net_list[name].ntype = ntype
   
+  def rename_net(self, oldname:str, newname:str):
+    self.net_list[newname] = self.net_list.pop(oldname)
+    self.net_list[newname].name = newname
+  
   def add_module(self, name:str, mtype:str):
     self.module_list[name] = _node_module(name, mtype)
     self.graph.add_node(self.module_list[name])
@@ -37,7 +41,7 @@ class circuit(list):
     elif (name1 in self.module_list) and (name2 in self.net_list):
       self.graph.add_edge(self.module_list[name1], self.net_list[name2], port=port)
     else:
-      assert (0)
+      assert 0, "Net-to-net and module-to-module connections are not allowed."
   
   def remove_connection(self, name1:str, name2:str):
     if (name1 in self.net_list) and (name2 in self.module_list):
