@@ -44,12 +44,14 @@ class circuit(list):
       assert 0, "Net-to-net and module-to-module connections are not allowed."
   
   def remove_connection(self, name1:str, name2:str):
+    assert type(name1) == str, f"{name1} is not str, but {type(name1)}"
+    assert type(name2) == str, f"{name2} is not str, but {type(name2)}"
     if (name1 in self.net_list) and (name2 in self.module_list):
       self.graph.remove_edge(self.net_list[name1], self.module_list[name2])
     elif (name1 in self.module_list) and (name2 in self.net_list):
       self.graph.remove_edge(self.module_list[name1], self.net_list[name2])
     else:
-      assert (0)
+      assert 0, f"Invalid attempt to remove connection between {name1} and {name2}"
   
   def to_pydot(self, labeldict:dict={}) -> pydot.Dot():
     nx = networkx.DiGraph()
