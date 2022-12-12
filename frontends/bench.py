@@ -107,3 +107,12 @@ def dump_bench(cir:circuit.circuit) -> str:
         out += outname.name + " = " + modulenode.mtype + "(" + (", ".join(ins)) + ")\n"
         
     return out
+
+def harvest_comments(filename:str) -> str:
+    out = ""
+    with open(filename, "r") as fin:
+        for line in fin:
+            sharp = line.find("#")
+            if sharp > -1:
+                out += line[sharp:] + "\n"
+    return out
