@@ -29,6 +29,7 @@ def topological_nets_from_outputs (cir:circuit.circuit) -> list:
         net = q.get()
         order.append(net.name)
         if (net.ntype != _net_type.IN) and (net.ntype != _net_type.INOUT):
+            #print(f"{net.name} {len(pred[net])}")
             module = member(pred[net])
             for parent in pred[module]:
                 ready = True
