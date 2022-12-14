@@ -37,6 +37,9 @@ def dump_verilog_str(cir:circuit.circuit, modulename:str="verilog_dump", portmap
             outs.append(net)
         elif ntype == utils._net_type.INT:
             nets.append(net)
+        elif ntype == utils._net_type.INOUT:
+            inps.append(net)
+            outs.append(net)
         else:
             assert 0
     
