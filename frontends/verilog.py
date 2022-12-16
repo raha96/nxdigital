@@ -28,6 +28,8 @@ def dump_verilog_str(cir:circuit.circuit, modulename:str="verilog_dump", portmap
     
     indent = "    "
 
+    inoutassigns = []
+
     inps, outs, nets = [], [], []
     for net in cir.net_list:
         ntype = cir.net_list[net].ntype
@@ -38,8 +40,11 @@ def dump_verilog_str(cir:circuit.circuit, modulename:str="verilog_dump", portmap
         elif ntype == utils._net_type.INT:
             nets.append(net)
         elif ntype == utils._net_type.INOUT:
-            inps.append(net)
-            outs.append(net)
+            inps.append(net + "_IN")
+            nets.append(net)
+            outs.append(net + "_OUT")
+            inoutassigns.append(indent + "assign " + net + " = " + net + "_IN;\n")
+            inoutassigns.append(indent + "assign " + net + "_OUT = " + net + ";\n")
         else:
             assert 0
     
@@ -75,6 +80,11 @@ def dump_verilog_str(cir:circuit.circuit, modulename:str="verilog_dump", portmap
         portmap = ", ".join(ports)
         line = indent + module[0] + " " + module[1] + "(" + portmap + ");\n"
         outstr += line
+    
+    outstr += "\n"
+    for line in inoutassigns:
+        outstr += line
+    
     outstr += "endmodule\n"
     return outstr
 
