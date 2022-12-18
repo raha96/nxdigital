@@ -35,6 +35,9 @@ class circuit(list):
     self.graph.remove_node(module)
     self.module_list.pop(name)
   
+  def check_for_cycles(self):
+    return networkx.simple_cycles(self.graph)
+  
   def add_connection(self, name1:str, name2:str, port:str):
     if (name1 in self.net_list) and (name2 in self.module_list):
       self.graph.add_edge(self.net_list[name1], self.module_list[name2], port=port)
