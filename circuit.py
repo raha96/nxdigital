@@ -41,6 +41,8 @@ class circuit(list):
     elif (name1 in self.module_list) and (name2 in self.net_list):
       self.graph.add_edge(self.module_list[name1], self.net_list[name2], port=port)
     else:
+      assert (name1 in self.net_list) or (name1 in self.module_list), f"{name1} not found"
+      assert (name2 in self.net_list) or (name2 in self.module_list), f"{name2} not found"
       assert 0, "Net-to-net and module-to-module connections are not allowed."
   
   def remove_connection(self, name1:str, name2:str):
