@@ -38,6 +38,46 @@ class circuit(list):
   def check_for_cycles(self):
     return networkx.simple_cycles(self.graph)
   
+  def inputs(self, modulename:str) -> list:
+    assert modulename in self.module_list, modulename + " is not a module"
+    names = []
+    for net in self.graph.pred[self.module_list[modulename]]:
+      names.append(net.name)
+    return names
+  
+  def driver_module(self, netname:str) -> str:
+    assert netname in self.net_list, netname + " is not a net"
+    parents = list(self.graph.pred[self.net_list[netname]].keys())
+    assert len(parents) == 1, netname + " has " + str(len(parents)) + " drivers"
+    return parents[0].name
+  
+  def driven_modules(self, netname:str) -> str:
+    assert netname in self.net_list, netname + " is not a net"
+    children = list(self.graph.succ[self.net_list[netname]].keys())
+    names = []
+    for mod in children:
+      names.append(mod.name)
+    return names
+  
+  def get_type(self, name:str):
+    if name in self.module_list:
+      return self.module_list[name].mtype
+    if name in self.net_list:
+      return self.net_list[name].ntype
+    return None
+  
+  def _retrieve_entitry(self, name:str):
+    if name in self.net_list:
+      return self.net_list[name]
+    if name in self.module_list:
+      return self.module_list[name]
+    assert 0, name + " not found"
+  
+  def get_port(self, name1:str, name2:str):
+    node1 = self._retrieve_entitry(name1)
+    node2 = self._retrieve_entitry(name2)
+    return self.graph.get_edge_data(node1, node2)["port"]
+  
   def add_connection(self, name1:str, name2:str, port:str):
     if (name1 in self.net_list) and (name2 in self.module_list):
       self.graph.add_edge(self.net_list[name1], self.module_list[name2], port=port)
