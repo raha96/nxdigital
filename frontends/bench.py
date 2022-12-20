@@ -101,9 +101,17 @@ def dump_bench(cir:circuit.circuit) -> str:
     for module in cir.module_list:
         modulenode = cir.module_list[module]
         outname = list(cir.graph.adj[modulenode].keys())[0].name
+        # TODO: Anything better than alphabetical order
+        insdict = {}
+        inkeys = []
         ins = []
         for node in cir.graph.pred[modulenode]:
-            ins.append(node.name)
+            port = cir.get_port(node.name, module)
+            insdict[port] = node.name
+            inkeys.append(port)
+        inkeys.sort()
+        for port in inkeys:
+            ins.append(insdict[port])
         out += outname + " = " + modulenode.mtype + "(" + (", ".join(ins)) + ")\n"
         
     return out
