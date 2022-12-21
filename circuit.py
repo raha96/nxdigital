@@ -45,6 +45,12 @@ class circuit(list):
       names.append(net.name)
     return names
   
+  def output(self, modulename:str) -> list:
+    assert modulename in self.module_list, modulename + " is not a module"
+    outs = list(self.graph.succ[self.module_list[modulename]])
+    assert len(outs) == 1, "Duplicate nets"
+    return outs[0].name
+  
   def driver_module(self, netname:str) -> str:
     assert netname in self.net_list, netname + " is not a net"
     parents = list(self.graph.pred[self.net_list[netname]].keys())
