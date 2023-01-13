@@ -14,12 +14,75 @@ class circuit(list):
     self.net_list[name] = _node_net(name, ntype)
     self.graph.add_node(self.net_list[name])
   
+  def remove_net(self, name:str):
+    net = self.net_list[name]
+    self.graph.remove_node(net)
+    self.net_list.pop(name)
+  
   def change_net_type(self, name:str, ntype:_net_type):
     self.net_list[name].ntype = ntype
+  
+  def rename_net(self, oldname:str, newname:str):
+    self.net_list[newname] = self.net_list.pop(oldname)
+    self.net_list[newname].name = newname
   
   def add_module(self, name:str, mtype:str):
     self.module_list[name] = _node_module(name, mtype)
     self.graph.add_node(self.module_list[name])
+  
+  def remove_module(self, name:str):
+    module = self.module_list[name]
+    self.graph.remove_node(module)
+    self.module_list.pop(name)
+  
+  def check_for_cycles(self):
+    return networkx.simple_cycles(self.graph)
+  
+  def inputs(self, modulename:str) -> list:
+    assert modulename in self.module_list, modulename + " is not a module"
+    names = []
+    for net in self.graph.pred[self.module_list[modulename]]:
+      names.append(net.name)
+    return names
+  
+  def output(self, modulename:str) -> list:
+    assert modulename in self.module_list, modulename + " is not a module"
+    outs = list(self.graph.succ[self.module_list[modulename]])
+    assert len(outs) == 1, "Duplicate nets"
+    return outs[0].name
+  
+  def driver_module(self, netname:str) -> str:
+    assert netname in self.net_list, netname + " is not a net"
+    parents = list(self.graph.pred[self.net_list[netname]].keys())
+    assert len(parents) == 1, netname + " has " + str(len(parents)) + " drivers"
+    return parents[0].name
+  
+  def driven_modules(self, netname:str) -> str:
+    assert netname in self.net_list, netname + " is not a net"
+    children = list(self.graph.succ[self.net_list[netname]].keys())
+    names = []
+    for mod in children:
+      names.append(mod.name)
+    return names
+  
+  def get_type(self, name:str):
+    if name in self.module_list:
+      return self.module_list[name].mtype
+    if name in self.net_list:
+      return self.net_list[name].ntype
+    return None
+  
+  def _retrieve_entitry(self, name:str):
+    if name in self.net_list:
+      return self.net_list[name]
+    if name in self.module_list:
+      return self.module_list[name]
+    assert 0, name + " not found"
+  
+  def get_port(self, name1:str, name2:str):
+    node1 = self._retrieve_entitry(name1)
+    node2 = self._retrieve_entitry(name2)
+    return self.graph.get_edge_data(node1, node2)["port"]
   
   def add_connection(self, name1:str, name2:str, port:str):
     if (name1 in self.net_list) and (name2 in self.module_list):
@@ -27,7 +90,19 @@ class circuit(list):
     elif (name1 in self.module_list) and (name2 in self.net_list):
       self.graph.add_edge(self.module_list[name1], self.net_list[name2], port=port)
     else:
-      assert (0)
+      assert (name1 in self.net_list) or (name1 in self.module_list), f"{name1} not found"
+      assert (name2 in self.net_list) or (name2 in self.module_list), f"{name2} not found"
+      assert 0, "Net-to-net and module-to-module connections are not allowed."
+  
+  def remove_connection(self, name1:str, name2:str):
+    assert type(name1) == str, f"{name1} is not str, but {type(name1)}"
+    assert type(name2) == str, f"{name2} is not str, but {type(name2)}"
+    if (name1 in self.net_list) and (name2 in self.module_list):
+      self.graph.remove_edge(self.net_list[name1], self.module_list[name2])
+    elif (name1 in self.module_list) and (name2 in self.net_list):
+      self.graph.remove_edge(self.module_list[name1], self.net_list[name2])
+    else:
+      assert 0, f"Invalid attempt to remove connection between {name1} and {name2}"
   
   def to_pydot(self, labeldict:dict={}) -> pydot.Dot():
     nx = networkx.DiGraph()

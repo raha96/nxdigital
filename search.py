@@ -1,68 +1,54 @@
-from nxdigital import circuit
+from typing import OrderedDict
+from . import circuit
+from queue import Queue
+from nxdigital.utils import _net_type
 
-def topoligical_sort_from_outputs (cir:circuit) -> list:
+def topological_nets_from_outputs (cir:circuit.circuit) -> list:
     """Return a list of circuit nets, sorted by reverse topological order"""
-    from queue import Queue
-    from nxdigital.utils import _net_type
-
-    #def neighbors(node):
-    #    modules = []
-    #    for edge in cir.graph.edges:
-    #        if edge[1] == node:
-    #            modules.append(edge[0])
-    #    nets = []
-    #    for m in modules:
-    #        for edge in cir.graph.edges:
-    #            if edge[1] == m:
-    #                nets.append(str(edge[0]))
-    #    return nets
-
-    def innodes(node):
-        """Return all nodes that have an edge to `node`"""
-        modules = []
-        for edge in cir.graph.edges:
-            if edge[1] == node:
-                modules.append(edge[0])
-        return modules
-
+    def member(view):
+        assert len(view) == 1
+        return list(view.keys())[0]
+    
     marked = {}
     order = []
+    pred = cir.graph.pred
+    adj = cir.graph.adj
 
-    for m in cir.module_list:
-        node = cir.module_list[m]
-        marked[node] = False
+    # TODO: Refactor into two functions (sort from some nodes + sort from outputs)
 
     q = Queue()
-    for n in cir.net_list:
-        node = cir.net_list[n]
-        if node.ntype == _net_type.OUT:
-            order.append(n)
-            marked[n] = True
-            newmods = innodes(node)
-            # A single module
-            assert len(newmods) == 1
-            m = newmods[0]
-            assert (not m in marked) or (not marked[m])
-            q.put(m)
-            marked[m] = True
+    for netname in cir.net_list:
+        net = cir.net_list[netname]
+        if (net.ntype == _net_type.OUT) or (net.ntype == _net_type.INOUT):
+            q.put(net)
+            marked[net] = True
         else:
-            marked[n] = False
+            marked[net] = False
 
     while q.qsize():
-        mod = q.get()
-        candidates = innodes(mod)
-        for n in candidates:
-            fanout = cir.graph.adj[n]
-            ready = True
-            for m in fanout:
-                if not marked[m]:
-                    ready = False
-            if ready and not marked[n.name]:
-                marked[n.name] = True
-                order.append(n.name)
-            prevmods = innodes(n)
-            for m in prevmods:
-                if not marked[m]:
-                    q.put(m)
-                    marked[m] = True
+        net = q.get()
+        order.append(net.name)
+        if (net.ntype != _net_type.IN) and (net.ntype != _net_type.INOUT):
+            #print(f"{net.name} {len(pred[net])}")
+            module = member(pred[net])
+            for parent in pred[module]:
+                ready = True
+                for childmod in adj[parent]:
+                    childnet = member(adj[childmod])
+                    if not marked[childnet]:
+                        ready = False
+                        break
+            if ready:
+                q.put(parent)
+                marked[parent] = True
+    return order
+
+
+def topological_modules_from_outputs (cir:circuit.circuit) -> list:
+    order_nets = topological_nets_from_outputs(cir)
+    order = []
+    pred = cir.graph.pred
+    for net in order_nets:
+        for mod in pred[cir.net_list[net]]:
+            order.append(mod.name)
     return order

@@ -1,3 +1,4 @@
+from ctypes import util
 from .. import circuit, utils
 import re
 
@@ -13,10 +14,18 @@ def load_bench(bench:str) -> circuit.circuit():
             # I/O detected
             if ismatch[1] != "":
                 # output
-                out.add_net(ismatch[3], utils._net_type.OUT)
+                if ismatch[3] in out.net_list:
+                    assert out.net_list[ismatch[3]].ntype == utils._net_type.IN
+                    out.net_list[ismatch[3]].ntype = utils._net_type.INOUT
+                else:
+                    out.add_net(ismatch[3], utils._net_type.OUT)
             elif ismatch[2] != "":
                 # input
-                out.add_net(ismatch[3], utils._net_type.IN)
+                if ismatch[3] in out.net_list:
+                    assert out.net_list[ismatch[3]].ntype == utils._net_type.OUT
+                    out.net_list[ismatch[3]].ntype = utils._net_type.INOUT
+                else:
+                    out.add_net(ismatch[3], utils._net_type.IN)
             else:
                 assert 0
             return True
@@ -63,4 +72,55 @@ def load_bench(bench:str) -> circuit.circuit():
             # A single line can not be I/O AND gate simultanously
             assert not(isio and isgate)
     
+    return out
+
+
+def dump_bench(cir:circuit.circuit) -> str:
+    #iotypename = {
+    #    utils._net_type.IN: "INPUT", 
+    #    utils._net_type.OUT: "OUTPUT"
+    #}
+    def isio(ntype:utils._net_type) -> bool:
+        if ntype == utils._net_type.IN or ntype == utils._net_type.OUT:
+            return True
+        return False
+    
+    out = ""
+    for net in cir.net_list:
+        ntype = cir.net_list[net].ntype
+        if isio(ntype):
+            if ntype == utils._net_type.IN:
+                out += "INPUT(" + net + ")\n"
+            elif ntype == utils._net_type.OUT:
+                out += "OUTPUT(" + net + ")\n"
+            elif ntype == utils._net_type.INOUT:
+                out += "INPUT(" + net + ")\n"
+                out += "OUTPUT(" + net + ")\n"
+    out += "\n"
+
+    for module in cir.module_list:
+        modulenode = cir.module_list[module]
+        outname = list(cir.graph.adj[modulenode].keys())[0].name
+        # TODO: Anything better than alphabetical order
+        insdict = {}
+        inkeys = []
+        ins = []
+        for node in cir.graph.pred[modulenode]:
+            port = cir.get_port(node.name, module)
+            insdict[port] = node.name
+            inkeys.append(port)
+        inkeys.sort()
+        for port in inkeys:
+            ins.append(insdict[port])
+        out += outname + " = " + modulenode.mtype + "(" + (", ".join(ins)) + ")\n"
+        
+    return out
+
+def harvest_comments(filename:str) -> str:
+    out = ""
+    with open(filename, "r") as fin:
+        for line in fin:
+            sharp = line.find("#")
+            if sharp > -1:
+                out += line[sharp:] + "\n"
     return out
