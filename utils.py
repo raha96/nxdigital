@@ -6,6 +6,8 @@ class _net_type (Enum):
   IN = 1
   OUT = 2
   INOUT = 3
+  STATIC0 = 4
+  STATIC1 = 5
 
 class _node_net():
   def __init__(self, name:str, ntype:_net_type):
