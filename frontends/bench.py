@@ -15,15 +15,20 @@ def load_bench(bench:str) -> circuit.circuit():
             if ismatch[1] != "":
                 # output
                 if ismatch[3] in out.net_list:
-                    assert out.net_list[ismatch[3]].ntype == utils._net_type.IN
-                    out.net_list[ismatch[3]].ntype = utils._net_type.INOUT
+                    print(out.net_list[ismatch[3]].ntype)
+                    if out.net_list[ismatch[3]].ntype == utils._net_type.IN:
+                        out.net_list[ismatch[3]].ntype = utils._net_type.INOUT
+                    else:
+                        print("Warning: Duplicate output " + ismatch[3] + " ignored")
                 else:
                     out.add_net(ismatch[3], utils._net_type.OUT)
             elif ismatch[2] != "":
                 # input
                 if ismatch[3] in out.net_list:
-                    assert out.net_list[ismatch[3]].ntype == utils._net_type.OUT
-                    out.net_list[ismatch[3]].ntype = utils._net_type.INOUT
+                    if out.net_list[ismatch[3]].ntype == utils._net_type.OUT:
+                        out.net_list[ismatch[3]].ntype = utils._net_type.INOUT
+                    else:
+                        print("Warning: Duplicate input " + ismatch[3] + " ignored")
                 else:
                     out.add_net(ismatch[3], utils._net_type.IN)
             else:
