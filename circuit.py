@@ -10,7 +10,11 @@ class circuit(list):
   def __str__(self):
     return "circuit"
   
-  def add_net(self, name:str, ntype:_net_type):
+  def add_net(self, name:str, ntype:_net_type, allowdup:bool=False):
+    if (not allowdup) and (name in self.net_list):
+      print("Warning: Duplicate net " + name)
+    if name in self.module_list:
+      print("Warning: " + name + " is both a net name and a module name")
     self.net_list[name] = _node_net(name, ntype)
     self.graph.add_node(self.net_list[name])
   
@@ -26,7 +30,11 @@ class circuit(list):
     self.net_list[newname] = self.net_list.pop(oldname)
     self.net_list[newname].name = newname
   
-  def add_module(self, name:str, mtype:str):
+  def add_module(self, name:str, mtype:str, allowdup:bool=False):
+    if (not allowdup) and (name in self.module_list):
+      print("Warning: Duplicate module " + name)
+    if name in self.net_list:
+      print("Warning: " + name + " is both a net name and a module name")
     self.module_list[name] = _node_module(name, mtype)
     self.graph.add_node(self.module_list[name])
   
