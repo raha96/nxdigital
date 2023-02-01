@@ -72,7 +72,7 @@ class circuit(list):
       return self.net_list[name].ntype
     return None
   
-  def _retrieve_entitry(self, name:str):
+  def _retrieve_entity(self, name:str):
     if name in self.net_list:
       return self.net_list[name]
     if name in self.module_list:
@@ -80,8 +80,8 @@ class circuit(list):
     assert 0, name + " not found"
   
   def get_port(self, name1:str, name2:str):
-    node1 = self._retrieve_entitry(name1)
-    node2 = self._retrieve_entitry(name2)
+    node1 = self._retrieve_entity(name1)
+    node2 = self._retrieve_entity(name2)
     return self.graph.get_edge_data(node1, node2)["port"]
   
   def add_connection(self, name1:str, name2:str, port:str):
