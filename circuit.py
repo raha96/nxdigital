@@ -6,9 +6,13 @@ class circuit(list):
     self.graph = networkx.DiGraph()
     self.net_list = {}
     self.module_list = {}
+    self.name = ""
   
   def __str__(self):
     return "circuit"
+  
+  def set_name(self, name:str):
+    self.name = name
   
   def add_net(self, name:str, ntype:_net_type, allowdup:bool=False):
     if (not allowdup) and (name in self.net_list):
@@ -43,6 +47,50 @@ class circuit(list):
     self.graph.remove_node(module)
     self.module_list.pop(name)
   
+  def get_ports(self, ntype:_net_type=None) -> list:
+    ports = []
+    for netname in self.net_list:
+      _ntype = self.net_list[netname].ntype
+      if (ntype == None and _ntype != _net_type.INT) or (ntype == _ntype):
+        ports.append(netname)
+    return ports
+  
+  def map_module(self, name:str, module):
+    def inst_name(pref, name):
+      return pref + "_" + name
+    instance = self.module_list[name]
+    if module.name != instance.mtype:
+      print(f"Warning: Attempting to map {module.name} as {instance.mtype} instance")
+    #ports = module.get_ports()
+    portmap = {}
+    for net in self.graph.pred[instance]:
+      port = self.get_port(net.name, name)
+      portmap[port] = net.name
+    for net in self.graph.adj[instance]:
+      port = self.get_port(name, net.name)
+      portmap[port] = net.name
+    # Probably leaving some corner cases here with INOUTs...
+    # Map names in the module to names in the expanded instance
+    namesdict = {}
+    # NOTE: This decisively breaks support for modules and nets with the same name
+    for netname in module.net_list:
+      net = module.net_list[netname]
+      if net.ntype == _net_type.INT:
+        # Copy all intermediate nets
+        newname = inst_name(name, netname)
+        self.add_net(newname, net.ntype)
+        namesdict[netname] = newname
+      else:
+        namesdict[netname] = portmap[netname]
+    for modulename in module.module_list:
+      submodule = module.module_list[modulename]
+      newname = inst_name(name, modulename)
+      self.add_module(newname, submodule.mtype)
+      namesdict[modulename] = newname
+    for u, v in module.graph.edges():
+      port = module.get_port(u.name, v.name)
+      self.add_connection(namesdict[u.name], namesdict[v.name], port=port)
+
   def check_for_cycles(self):
     return networkx.simple_cycles(self.graph)
   
