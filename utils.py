@@ -6,6 +6,8 @@ class _net_type (Enum):
   IN = 1
   OUT = 2
   INOUT = 3
+  STATIC0 = 4
+  STATIC1 = 5
 
 class _node_net():
   def __init__(self, name:str, ntype:_net_type):
@@ -32,6 +34,10 @@ class _node_module():
   def __init__(self, name:str, mtype:str):
     self.name = name
     self.mtype = mtype
+    self.commented = False
+  
+  def make_commented(self):
+    self.commented = True
 
   def __hash__(self):
     return hash(self.name)

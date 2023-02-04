@@ -15,15 +15,20 @@ def load_bench(bench:str) -> circuit.circuit():
             if ismatch[1] != "":
                 # output
                 if ismatch[3] in out.net_list:
-                    assert out.net_list[ismatch[3]].ntype == utils._net_type.IN
-                    out.net_list[ismatch[3]].ntype = utils._net_type.INOUT
+                    print(out.net_list[ismatch[3]].ntype)
+                    if out.net_list[ismatch[3]].ntype == utils._net_type.IN:
+                        out.net_list[ismatch[3]].ntype = utils._net_type.INOUT
+                    else:
+                        print("Warning: Duplicate output " + ismatch[3] + " ignored")
                 else:
                     out.add_net(ismatch[3], utils._net_type.OUT)
             elif ismatch[2] != "":
                 # input
                 if ismatch[3] in out.net_list:
-                    assert out.net_list[ismatch[3]].ntype == utils._net_type.OUT
-                    out.net_list[ismatch[3]].ntype = utils._net_type.INOUT
+                    if out.net_list[ismatch[3]].ntype == utils._net_type.OUT:
+                        out.net_list[ismatch[3]].ntype = utils._net_type.INOUT
+                    else:
+                        print("Warning: Duplicate input " + ismatch[3] + " ignored")
                 else:
                     out.add_net(ismatch[3], utils._net_type.IN)
             else:
@@ -50,6 +55,7 @@ def load_bench(bench:str) -> circuit.circuit():
             out.add_module(modname, _type)
             out.add_connection(modname, _outname, "y")
             i = 0
+            # TODO: Anything smarter than *this*...
             names = "abcdefghijklmnopqrstuvwxz"
             for _inp in _params:
                 out.add_connection(_inp.strip(), modname, names[i])
@@ -60,7 +66,10 @@ def load_bench(bench:str) -> circuit.circuit():
     with open(bench, "r") as benchin:
         for line in benchin:
             # Discard comments
-            line = line[:line.find("#")].strip()
+            comment = line.find("#")
+            if comment > -1:
+                line = line[:comment]
+            line = line.strip()
             isio = process_ios(line, out)
             isgate = process_gate(line, out, moduleindex)
             if isgate:
@@ -112,6 +121,8 @@ def dump_bench(cir:circuit.circuit) -> str:
         inkeys.sort()
         for port in inkeys:
             ins.append(insdict[port])
+        if modulenode.commented:
+            out += "# "
         out += outname + " = " + modulenode.mtype + "(" + (", ".join(ins)) + ")\n"
         
     return out
