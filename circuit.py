@@ -90,7 +90,15 @@ class circuit(list):
     for u, v in module.graph.edges():
       port = module.get_port(u.name, v.name)
       self.add_connection(namesdict[u.name], namesdict[v.name], port=port)
-    self.module_list[name].make_commented()
+    # Clean up the original submodule and its connections
+    killlist = []
+    for net in self.graph.pred[instance]:
+      killlist.append((net.name, name))
+    for net in self.graph.adj[instance]:
+      killlist.append((name, net.name))
+    for u, v in killlist:
+      self.remove_connection(u, v)
+    self.remove_module(name)
 
   def check_for_cycles(self):
     return networkx.simple_cycles(self.graph)
