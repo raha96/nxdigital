@@ -55,6 +55,7 @@ def load_bench(bench:str) -> circuit.circuit():
             out.add_module(modname, _type)
             out.add_connection(modname, _outname, "y")
             i = 0
+            # TODO: Anything smarter than *this*...
             names = "abcdefghijklmnopqrstuvwxz"
             for _inp in _params:
                 out.add_connection(_inp.strip(), modname, names[i])
@@ -65,7 +66,10 @@ def load_bench(bench:str) -> circuit.circuit():
     with open(bench, "r") as benchin:
         for line in benchin:
             # Discard comments
-            line = line[:line.find("#")].strip()
+            comment = line.find("#")
+            if comment > -1:
+                line = line[:comment]
+            line = line.strip()
             isio = process_ios(line, out)
             isgate = process_gate(line, out, moduleindex)
             if isgate:
