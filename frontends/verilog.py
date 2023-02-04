@@ -59,12 +59,13 @@ def dump_verilog_str(cir:circuit.circuit, modulename:str="verilog_dump", portmap
     outstr += f"module {modulename} (" + (beautify(inps, indent="    ")) + ", \n" + (beautify(outs, indent="    ")) + ");\n"
     outstr += indent + "input " + beautify(inps) + ";\n"
     outstr += indent + "output " + beautify(outs) + ";\n"
-    outstr += indent + "wire " + beautify(nets) + ";\n"
+    if len(nets):
+        outstr += indent + "wire " + beautify(nets) + ";\n"
     modules = {}
     # Outputs
     for module in cir.module_list:
         node = cir.module_list[module]
-        modules[module] = [node.mtype, module, {}]
+        modules[module] = [node.mtype, module, {}, node.commented]
         net = list(cir.graph.adj[node].keys())[0]
         src = cir.module_list[module]
         port = cir.graph.adj[src][net]["port"]
@@ -77,6 +78,7 @@ def dump_verilog_str(cir:circuit.circuit, modulename:str="verilog_dump", portmap
             modules[adjnet.name][2][net] = port
     for modulename in modules:
         module = modules[modulename]
+        commented = module[3]
         ports = []
         for port in module[2]:
             if portmapbyname:
@@ -84,7 +86,14 @@ def dump_verilog_str(cir:circuit.circuit, modulename:str="verilog_dump", portmap
             else:
                 ports.append(f"{port}")
         portmap = ", ".join(ports)
-        line = indent + module[0] + " " + module[1] + "(" + portmap + ");\n"
+        line = indent
+        if commented:
+            line += "/* "
+        line += module[0] + " " + module[1] + "(" + portmap + ");"
+        if commented:
+            line += " */"
+        line += "\n"
+
         outstr += line
     
     outstr += "\n"

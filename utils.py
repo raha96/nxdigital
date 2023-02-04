@@ -34,6 +34,10 @@ class _node_module():
   def __init__(self, name:str, mtype:str):
     self.name = name
     self.mtype = mtype
+    self.commented = False
+  
+  def make_commented(self):
+    self.commented = True
 
   def __hash__(self):
     return hash(self.name)

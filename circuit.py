@@ -90,6 +90,7 @@ class circuit(list):
     for u, v in module.graph.edges():
       port = module.get_port(u.name, v.name)
       self.add_connection(namesdict[u.name], namesdict[v.name], port=port)
+    self.module_list[name].make_commented()
 
   def check_for_cycles(self):
     return networkx.simple_cycles(self.graph)

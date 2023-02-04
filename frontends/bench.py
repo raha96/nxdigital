@@ -117,6 +117,8 @@ def dump_bench(cir:circuit.circuit) -> str:
         inkeys.sort()
         for port in inkeys:
             ins.append(insdict[port])
+        if modulenode.commented:
+            out += "# "
         out += outname + " = " + modulenode.mtype + "(" + (", ".join(ins)) + ")\n"
         
     return out
