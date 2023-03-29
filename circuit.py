@@ -9,7 +9,9 @@ class circuit(list):
     self.name = ""
   
   def __str__(self):
-    return "circuit"
+    return f"<nxdigital.circuit;name={self.name}>"
+  def __repr__(self):
+    return self.__str__()
   
   def set_name(self, name:str):
     self.name = name
