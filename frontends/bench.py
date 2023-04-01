@@ -2,7 +2,7 @@ from ctypes import util
 from .. import circuit, utils
 import re
 
-def load_bench(bench:str) -> circuit.circuit():
+def load_bench(bench:str) -> circuit.circuit:
     out = circuit.circuit()
     moduleindex = 0
     
