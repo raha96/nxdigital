@@ -34,3 +34,10 @@ def yosys_cell2gate():
     "$and": "and", 
     "$not": "not"
   }
+
+def bench_eval():
+  return {
+    "and": lambda a, b: a & b, 
+    "xor": lambda a, b: a ^ b, 
+    "or": lambda a, b: a | b
+  }

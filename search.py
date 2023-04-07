@@ -61,7 +61,7 @@ def topological_modules_from_inputs (cir:circuit.circuit) -> list:
             return gates[0].name
         # PO
         return None
-    def check_gate_and_add(gatename:str, marked:dict, q:Queue):
+    def check_gate_add(gatename:str, marked:dict, q:Queue):
         if gatename in marked:
             marked[gatename] += 1
         else:
@@ -79,14 +79,14 @@ def topological_modules_from_inputs (cir:circuit.circuit) -> list:
         if net.ntype == _net_type.IN:
             gatename = driven_gate(netname)
             assert gatename
-            check_gate_and_add(gatename, marked, q)
+            check_gate_add(gatename, marked, q)
     while q.qsize():
         gatename = q.get()
+        order.append(gatename)
         for net in cir.graph.adj[cir.module_list[gatename]]:
             outgate = driven_gate(net.name)
             if outgate:
-                check_gate_and_add(outgate, marked, q)
-                order.append(outgate)
+                check_gate_add(outgate, marked, q)
     return order
 
 def topological_nets_from_inputs (cir:circuit.circuit) -> list:
