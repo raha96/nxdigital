@@ -1,4 +1,3 @@
-from ctypes import util
 from .. import circuit, utils
 import re
 
