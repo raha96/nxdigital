@@ -55,10 +55,10 @@ def topological_modules_from_outputs (cir:circuit.circuit) -> list:
 
 def topological_modules_from_inputs (cir:circuit.circuit) -> list:
     """Create a list of module names sorted topologically from PIs to POs."""
-    def driven_gate(netname:str) -> str:
-        gates = list(cir.graph.adj[net])
+    def driven_gates(netname:str) -> str:
+        gates = list(cir.graph.adj[cir.net_list[netname]])
         if len(gates):
-            return gates[0].name
+            return [gate.name for gate in gates]
         # PO
         return None
     def check_gate_add(gatename:str, marked:dict, q:Queue):
@@ -77,16 +77,18 @@ def topological_modules_from_inputs (cir:circuit.circuit) -> list:
     for netname in cir.net_list:
         net = cir.net_list[netname]
         if net.ntype == _net_type.IN:
-            gatename = driven_gate(netname)
-            assert gatename
-            check_gate_add(gatename, marked, q)
+            gatenames = driven_gates(netname)
+            assert gatenames
+            for gatename in gatenames:
+                check_gate_add(gatename, marked, q)
     while q.qsize():
         gatename = q.get()
         order.append(gatename)
         for net in cir.graph.adj[cir.module_list[gatename]]:
-            outgate = driven_gate(net.name)
-            if outgate:
-                check_gate_add(outgate, marked, q)
+            outgates = driven_gates(net.name)
+            if outgates:
+                for outgate in outgates:
+                    check_gate_add(outgate, marked, q)
     return order
 
 def topological_nets_from_inputs (cir:circuit.circuit) -> list:

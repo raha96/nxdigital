@@ -38,6 +38,9 @@ def yosys_cell2gate():
 def bench_eval():
   return {
     "and": lambda a, b: a & b, 
+    "nand": lambda a, b: not(a & b), 
     "xor": lambda a, b: a ^ b, 
-    "or": lambda a, b: a | b
+    "or": lambda a, b: a | b, 
+    "buf": lambda a: a, 
+    "not": lambda a: not(a)
   }
