@@ -8,7 +8,7 @@ def sta_max(cir:circuit, delays:dict) -> dict:
     nets.reverse()
     times = {}
     for n in nets:
-        net = cir.net_list[n]
+        net = cir.module_list[n]
         if net.ntype == _net_type.IN:
             times[n] = 0
         mods = cir.graph.adj[net]
@@ -27,7 +27,7 @@ def sta_slack(cir:circuit, delays:dict) -> dict:
     slacks = {}
     times = sta_max(cir, delays)
     for n in times:
-        net = cir.net_list[n]
+        net = cir.module_list[n]
         needed = -1
         for mod in cir.graph.adj[net]:
             outnet = cir.graph.adj[mod]

@@ -7,8 +7,8 @@ from . import utils
 def eval(cir:circuit.circuit, inputs:dict, evaldict:dict=cells.bench_eval()) -> dict:
     # Initialize inputs with 'U'
     out = {}
-    for netname in cir.net_list:
-        if cir.net_list[netname].ntype == utils._net_type.IN:
+    for netname in cir.module_list:
+        if cir.module_list[netname].ntype == utils._net_type.IN:
             out[netname] = "U"
     for netname in inputs:
         out[netname] = inputs[netname]

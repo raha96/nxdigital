@@ -7,7 +7,7 @@ def fanout_po (cir:circuit) -> dict:
     nets = topoligical_sort_from_outputs(cir)
     focs = {}
     for net in nets:
-        if cir.net_list[net].ntype == _net_type.OUT:
+        if cir.module_list[net].ntype == _net_type.OUT:
             focs[net] = set([net])
         else:
             focs[net] = set()

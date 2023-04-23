@@ -94,8 +94,8 @@ def dump_bench(cir:circuit.circuit) -> str:
         return False
     
     out = ""
-    for net in cir.net_list:
-        ntype = cir.net_list[net].ntype
+    for net in cir.module_list:
+        ntype = cir.module_list[net].ntype
         if isio(ntype):
             if ntype == utils._net_type.IN:
                 out += "INPUT(" + net + ")\n"

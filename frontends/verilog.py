@@ -19,11 +19,11 @@ def dump_verilog_str(cir:circuit.circuit, modulename:str="verilog_dump", portmap
         # TODO: I'm positive there's a better way to do this via nx functions
         # dir: False -> module to net, True -> net to module
         if dir:
-            n1 = cir.net_list[src]
+            n1 = cir.module_list[src]
             n2 = cir.module_list[dst]
         else:
             n1 = cir.module_list[src]
-            n2 = cir.net_list[dst]
+            n2 = cir.module_list[dst]
         return cir.graph.adj[n1][n2]["port"]
     
     indent = "    "
@@ -31,8 +31,8 @@ def dump_verilog_str(cir:circuit.circuit, modulename:str="verilog_dump", portmap
     netassigns = []
 
     inps, outs, nets = [], [], []
-    for net in cir.net_list:
-        ntype = cir.net_list[net].ntype
+    for net in cir.module_list:
+        ntype = cir.module_list[net].ntype
         if ntype == utils._net_type.IN:
             inps.append(net)
         elif ntype == utils._net_type.OUT:
@@ -71,8 +71,8 @@ def dump_verilog_str(cir:circuit.circuit, modulename:str="verilog_dump", portmap
         port = cir.graph.adj[src][net]["port"]
         modules[module][2][net] = port
     # Inputs
-    for net in cir.net_list:
-        node = cir.net_list[net]
+    for net in cir.module_list:
+        node = cir.module_list[net]
         for adjnet in cir.graph.adj[node]:
             port = getport(net, adjnet.name, cir, True)
             modules[adjnet.name][2][net] = port

@@ -13,8 +13,8 @@ def emit_verilog (cir:circuit, cell2gate:dict={}) -> tuple:
     ins, outs, wires = [], [], []
     ctrls, origs = {}, {}
 
-    for net in cir.net_list:
-        ntype = cir.net_list[net].ntype
+    for net in cir.module_list:
+        ntype = cir.module_list[net].ntype
         if ntype == _net_type.IN:
             ins.append(net)
         elif ntype == _net_type.OUT:

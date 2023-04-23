@@ -17,8 +17,8 @@ def topological_nets_from_outputs (cir:circuit.circuit) -> list:
     # TODO: Refactor into two functions (sort from some nodes + sort from outputs)
 
     q = Queue()
-    for netname in cir.net_list:
-        net = cir.net_list[netname]
+    for netname in cir.module_list:
+        net = cir.module_list[netname]
         if (net.ntype == _net_type.OUT) or (net.ntype == _net_type.INOUT):
             q.put(net)
             marked[net] = True
@@ -49,14 +49,14 @@ def topological_modules_from_outputs (cir:circuit.circuit) -> list:
     order = []
     pred = cir.graph.pred
     for net in order_nets:
-        for mod in pred[cir.net_list[net]]:
+        for mod in pred[cir.module_list[net]]:
             order.append(mod.name)
     return order
 
 def topological_modules_from_inputs (cir:circuit.circuit) -> list:
     """Create a list of module names sorted topologically from PIs to POs."""
     def driven_gates(netname:str) -> str:
-        gates = list(cir.graph.adj[cir.net_list[netname]])
+        gates = list(cir.graph.adj[cir.module_list[netname]])
         if len(gates):
             return [gate.name for gate in gates]
         # PO
@@ -74,8 +74,8 @@ def topological_modules_from_inputs (cir:circuit.circuit) -> list:
     marked = {}
     q = Queue()
     # Initialize from PIs
-    for netname in cir.net_list:
-        net = cir.net_list[netname]
+    for netname in cir.module_list:
+        net = cir.module_list[netname]
         if net.ntype == _net_type.IN:
             gatenames = driven_gates(netname)
             assert gatenames
@@ -95,8 +95,8 @@ def topological_nets_from_inputs (cir:circuit.circuit) -> list:
     def outname(gatename:str) -> str:
         return list(cir.graph.adj[cir.module_list[gatename]].keys())[0].name
     order = []
-    for netname in cir.net_list:
-        if cir.net_list[netname].ntype == _net_type.IN:
+    for netname in cir.module_list:
+        if cir.module_list[netname].ntype == _net_type.IN:
             order.append(netname)
     modorder = topological_modules_from_inputs(cir)
     for modname in modorder:
