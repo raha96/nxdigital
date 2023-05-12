@@ -1,4 +1,3 @@
-from tabnanny import check
 from . import circuit
 from queue import Queue
 from nxdigital.utils import _net_type
