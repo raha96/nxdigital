@@ -1,15 +1,23 @@
 from nxdigital.circuit import circuit
 from nxdigital.search import topological_nets_from_outputs
 from nxdigital.utils import _net_type
+from queue import Queue
 
 def fanout_net (cir:circuit, net_name:str) -> set:
     """" Find all nets in the fanout cone of the given net"""
-    coi = set([net_name])
-    for child_module in cir.graph.adj[cir.net_list[net_name]]:
-        child_nets = list(cir.graph.adj[child_module])
-        assert len(child_nets) == 1
-        child_net = child_nets[0]
-        coi.union(fanout_net(cir, child_net.name))
+    q = Queue()
+    net = cir.net_list[net_name]
+    q.put(net)
+    marked = set([net])
+    coi = []
+    while q.qsize():
+        net = q.get()
+        coi.append(net.name)
+        for mod in cir.graph.adj[net]:
+            for child_net in cir.graph.adj[mod]:
+                if not(child_net in marked):
+                    q.put(child_net)
+                    marked.add(child_net)
     return coi
 
 def fanout_all (cir:circuit) -> dict:
