@@ -14,7 +14,7 @@ def load_bench(bench:str) -> circuit.circuit:
             if ismatch[1] != "":
                 # output
                 if ismatch[3] in out.net_list:
-                    print(out.net_list[ismatch[3]].ntype)
+                    #print(out.net_list[ismatch[3]].ntype)
                     if out.net_list[ismatch[3]].ntype == utils._net_type.IN:
                         out.net_list[ismatch[3]].ntype = utils._net_type.INOUT
                     else:
