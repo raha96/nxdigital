@@ -50,7 +50,7 @@ def load_bench(bench:str) -> circuit.circuit:
             for _net in _nets:
                 if not _net in out.net_list:
                     out.add_net(_net, utils._net_type.INT)
-            modname = "U" + str(moduleindex)
+            modname = "_MOD_U" + str(moduleindex)
             out.add_module(modname, _type)
             out.add_connection(modname, _outname, "y")
             i = 0
