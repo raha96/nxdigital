@@ -1,3 +1,4 @@
+from dis import dis
 from nxdigital.circuit import circuit
 from nxdigital.search import topological_nets_from_outputs
 from nxdigital.utils import _net_type
@@ -20,11 +21,20 @@ def fanout_net (cir:circuit, net_name:str) -> set:
                     marked.add(child_net)
     return coi
 
-def fanout_all (cir:circuit) -> dict:
+def fanout_all (cir:circuit, display_progress:bool=False) -> dict:
     """" Find all nets in the fanout cone of every net"""
     nets = topological_nets_from_outputs(cir)
     coi = {}
-    for net in nets:
+    if display_progress:
+        print("Calculating fanouts: %0", end="")
+        oldp = 0
+    for i in range(len(nets)):
+        net = nets[i]
+        if display_progress:
+            newp = int(100 * (i / len(nets)))
+            if newp > oldp:
+                oldp = newp
+                print(f"\rCalculating fanouts: %{newp}", end="")
         coi[net] = set([net])
         if cir.net_list[net].ntype != _net_type.OUT:
             for edge in cir.graph.edges:
@@ -32,6 +42,8 @@ def fanout_all (cir:circuit) -> dict:
                     module = list(cir.graph.adj[edge[1]])
                     assert len(module) == 1
                     coi[net] = set.union(coi[net], coi[module[0].name])
+    if display_progress:
+        print("")
     return coi
 
 def fanout_po (cir:circuit) -> dict:
