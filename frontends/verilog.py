@@ -105,5 +105,5 @@ def dump_verilog_str(cir:circuit.circuit, modulename:str="verilog_dump", portmap
 
 def dump_verilog(cir:circuit.circuit, filename:str, modulename="verilog_dump"):
     fout = open(filename, "w")
-    fout.write(dump_verilog_str(cir, modulename))
+    fout.write(dump_verilog_str(cir, modulename, portmapbyname=False))
     fout.close()
