@@ -1,11 +1,10 @@
 from nxdigital.circuit import circuit
+from nxdigital.search import topological_nets_from_inputs
+from nxdigital.utils import _net_type
 
 def sta_max(cir:circuit, delays:dict) -> dict:
     """Calculate maximum delay for each net between all arcs"""
-    from nxdigital.search import topoligical_sort_from_outputs
-    from nxdigital.utils import _net_type
-    nets = topoligical_sort_from_outputs(cir)
-    nets.reverse()
+    nets = topological_nets_from_inputs(cir)
     times = {}
     for n in nets:
         net = cir.module_list[n]

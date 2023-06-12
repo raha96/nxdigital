@@ -1,4 +1,3 @@
-from tabnanny import check
 from . import circuit
 from queue import Queue
 from nxdigital.utils import _net_type
@@ -21,9 +20,9 @@ def topological_nets_from_outputs (cir:circuit.circuit) -> list:
         net = cir.module_list[netname]
         if (net.ntype == _net_type.OUT) or (net.ntype == _net_type.INOUT):
             q.put(net)
-            marked[net] = True
+            marked[net] = 1
         else:
-            marked[net] = False
+            marked[net] = 0
 
     while q.qsize():
         net = q.get()
@@ -31,16 +30,10 @@ def topological_nets_from_outputs (cir:circuit.circuit) -> list:
         if (net.ntype != _net_type.IN) and (net.ntype != _net_type.INOUT):
             #print(f"{net.name} {len(pred[net])}")
             module = member(pred[net])
-            for parent in pred[module]:
-                ready = True
-                for childmod in adj[parent]:
-                    childnet = member(adj[childmod])
-                    if not marked[childnet]:
-                        ready = False
-                        break
-            if ready:
-                q.put(parent)
-                marked[parent] = True
+            for inpnet in pred[module]:
+                marked[inpnet] += 1
+                if marked[inpnet] == len(adj[inpnet]):
+                    q.put(inpnet)
     return order
 
 
